@@ -25,7 +25,7 @@ import {
   DEFAULT_NOTE_RANGE_START,
   DEFAULT_NOTE_RANGE_END,
   STEPS_PER_BAR,
-} from "./utils/music";
+} from "./music";
 
 describe("noteNumberToName", () => {
   test("converts middle C (MIDI 60) to C4", () => {
