@@ -10,7 +10,11 @@
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "check": "biome check .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:shell": "bash conventions/src/lib.test.sh && bash conventions/src/check-context.test.sh",
+    "test:all": "bun test && bash conventions/src/lib.test.sh && bash conventions/src/check-context.test.sh"
   },
   "license": "MIT",
   "dependencies": {

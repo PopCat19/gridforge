@@ -30,6 +30,9 @@ pkgs.mkShell {
     bun
     nodejs
 
+    # Shell script linting
+    shellcheck
+
     # Code quality tools
     biome
 
@@ -51,5 +54,6 @@ pkgs.mkShell {
   shellHook = ''
     echo "Gridforge dev shell activated"
     echo "Run 'bun tauri dev' to start development"
+    echo "Run tests: npm test (bun), npm run test:shell, npm run test:all"
   '';
 }
