@@ -306,6 +306,100 @@ configuration/
     └── api-keys.age
 ```
 
+## SoC / SRP (Rule 15)
+
+**Split mixed-concern files:**
+```nix
+# Bad: boot.nix configuring both hardware and user sessions
+{ ... }: {
+  boot.loader.systemd-boot.enable = true;   # hardware concern
+  services.greetd.enable = true;            # session concern
+  users.users.alice.isNormalUser = true;    # user concern
+}
+
+# Good: one concern per file
+# boot.nix
+{ ... }: {
+  boot.loader.systemd-boot.enable = true;
+}
+
+# greeter.nix
+{ ... }: {
+  services.greetd.enable = true;
+}
+
+# users.nix
+{ ... }: {
+  users.users.alice.isNormalUser = true;
+}
+```
+
+**CoC — structural deviation requires justification:**
+```nix
+# Bad: catch-all directory, concern unclear
+configuration/
+└── misc/
+    ├── boot.nix
+    ├── users.nix
+    └── greeter.nix
+
+# Good: each directory declares its concern
+configuration/
+├── system/
+│   ├── boot.nix
+│   └── users.nix
+└── home/
+    └── greeter.nix
+```
+
+**SRP signal — two unrelated commit messages touching the same file:**
+```
+# Warning sign: both of these changed services.nix
+feat(services): enable syncthing
+feat(services): configure ssh hardening
+
+# Correct split
+# syncthing.nix  ←  feat(syncthing): enable syncthing
+# ssh.nix        ←  feat(ssh): configure ssh hardening
+```
+
+## Stratified Modules (Rule 4)
+
+**Domain stratification:**
+```
+# Before: 1200-line auth.nix
+config/
+  auth.nix
+
+# After: split by independent concern
+config/
+  auth/
+    login.nix       # Purpose: Configures login flow and PAM
+    tokens.nix      # Purpose: Manages JWT and API token lifetimes
+    sessions.nix    # Purpose: Defines session timeout and cleanup
+    context.md
+```
+
+**Layer stratification:**
+```
+# Before: 1100-line api-client.ts
+src/
+  api-client.ts
+
+# After: split by architectural layer
+src/
+  api-client/
+    types.ts        # Purpose: Defines API request and response types
+    handlers.ts     # Purpose: Implements HTTP request handlers
+    middleware.ts    # Purpose: Applies auth and retry middleware
+    utils.ts        # Purpose: Provides URL building and error mapping
+    context.md
+```
+
+**Choosing pattern:**
+- Domain: independent features (login ≠ tokens ≠ sessions)
+- Layer: shared concerns across boundaries (types, handlers, utils operate on same domain)
+
 ## Comments (Rule 5)
 
 **Keep only when necessary:**

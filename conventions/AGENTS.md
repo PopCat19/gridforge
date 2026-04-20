@@ -15,16 +15,17 @@ Opinionated agent development rules and conventions. Covers:
 - Commit message format and workflow
 - Documentation guidelines
 - Validation and CI/CD configuration
-- Principles (KISS, DRY, maintainable over clever)
+- Principles (KISS, DRY, SoC, SRP, CoC, maintainable over clever)
+- Vocabulary (DDD + Figma bridge, repo-agnostic definitions)
 
 **Reading guide:** Comprehensive document (1.5~3k lines). Use the table of contents to navigate to relevant sections.
 
-### DEV-MINI.md
+### SKILL.md
 
 Condensed non-obvious conventions only. Assumes standard SWE practices. Covers:
 
 - Naming (snake_case dirs, kebab-case files)
-- Structure (depth limits, context.md requirements, module wiring)
+- Structure (depth limits, context.md requirements, module wiring, stratification thresholds)
 - File headers (Purpose lines)
 - Commit format and workflow
 - Agent interaction patterns (one-shot commands, wl-copy wrapping)
@@ -88,8 +89,12 @@ Verifies `context.md` files match actual directory contents. Detects structural 
 
 - `DEVELOPMENT.md` — Established conventions for this project
 - `DEV-EXAMPLES.md` — Reference examples tied to DEVELOPMENT.md rules
-- `DEV-MINI.md` — Condensed conventions derived from DEVELOPMENT.md
+- `SKILL.md` — Condensed conventions derived from DEVELOPMENT.md
 - `src/changelog.sh` — Workflow script following project conventions
 - `src/sync.sh` — Workflow script following project conventions
+
+**Repo-specific vocabulary mapping lives in the root `context.md`, not in
+convention files. Do not add project paths to DEVELOPMENT.md or
+SKILL.md.**
 
 These files represent intentional design decisions. Modifications should only occur when the user explicitly states a need for changes.
