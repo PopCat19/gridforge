@@ -4,7 +4,7 @@
 
 **Principles:** KISS (Keep It Simple, Stupid), DRY (Don't Repeat Yourself), SoC (Separation of Concerns), SRP (Single Responsibility Principle), CoC (Convention over Configuration), lazy maintenance, self-documenting code.
 
-**Reading Guide:** This document is comprehensive (1.5~3k lines) covering multiple languages and use cases. Use the table of contents to navigate to relevant sections. Each rule is independently simple; apparent complexity comes from breadth of coverage. Rule 17 (Example Patterns) is optional reference material.
+**Reading Guide:** This document is a full reference (~1.5-3k lines) covering multiple languages and use cases. Use the table of contents to navigate to relevant sections. Each rule is independently simple; apparent complexity comes from breadth of coverage. Rule 17 (Example Patterns) is optional reference material.
 
 ## Table of Contents
 
@@ -103,7 +103,7 @@
   - Use `# Validates here because...` not `# We validate here because...`
   - Use `fix: update API endpoint` not `fix: we updated the API`
 
-### Nix (NixOS, Home Manager, Flakes)
+### Nix
 
 **Formatter:** `nixfmt` (RFC 166, merged as default)
 
@@ -776,7 +776,7 @@ nix-shell -p pandoc --run "pandoc input.md -o output.pdf"
 - **Max depth:** 6 levels from repository root
   - Counting: Start from repo root (where `.git` lives)
   - Monorepo note: Count from app/package root instead (e.g., `apps/myapp/` is depth 0)
-- **Dir names:** Simple, descriptive, single-purpose (e.g., `auth/`, `models/` — not `miscellaneous/`, `stuff/`)
+- **Dir names:** Simple, descriptive, single-purpose (e.g., `auth/`, `models/`, not `miscellaneous/`, `stuff/`)
 - **Configurable files:** Group flat rather than deep (user-facing settings should be easy to find)
 
 **Modular design:**
@@ -791,7 +791,7 @@ nix-shell -p pandoc --run "pandoc input.md -o output.pdf"
   - Enables selective imports/overrides
 - **SoC in practice:** Each module directory maps to one concern
   (`system/`, `home/`, `secrets/`). Avoid catch-all directories
-  (`misc/`, `stuff/`, `helpers/`) — if a name doesn't declare a concern,
+  (`misc/`, `stuff/`, `helpers/`). If a name doesn't declare a concern,
   the structure is wrong
 - **SRP in practice:** If a file changes for two unrelated reasons across
   separate commits, it should have been two files
@@ -845,11 +845,11 @@ configuration/
 
 **Rationale:** Large monolithic files obscure boundaries between concerns. Splitting by role makes changes traceable, reviews focused, and imports selective. A soft threshold prevents premature fragmentation while nudging toward healthier structure.
 
-**When to stratify:** Consider splitting files approaching **800–1000 lines** (soft guideline). Context matters — some files are naturally long (e.g., single-file deployments, portable scripts). Don't split for the sake of splitting.
+**When to stratify:** Consider splitting files approaching **800–1000 lines** (soft guideline). Context matters; some files are naturally long (e.g., single-file deployments, portable scripts). Don't split for the sake of splitting.
 
 **Two valid patterns:**
 
-**Domain subdirs** — group files by independent feature or concern:
+**Domain subdirs**, group files by independent feature or concern:
 ```
 # Before: single 1200-line auth.nix
 config/
@@ -864,7 +864,7 @@ config/
     context.md
 ```
 
-**Layer subdirs** — group files by architectural layer:
+**Layer subdirs**, group files by architectural layer:
 ```
 # Before: single 1100-line api-client.ts
 src/
@@ -881,9 +881,9 @@ src/
 ```
 
 **Choosing a pattern:**
-- **Domain:** Use when concerns are independent features (login vs tokens vs sessions — each is a distinct capability)
-- **Layer:** Use when files share concerns across architectural boundaries (types, handlers, middleware — each operates on the same domain)
-- **When in doubt:** Prefer domain — it maps closer to how humans think about modules
+- **Domain:** Use when concerns are independent features (login vs tokens vs sessions, each is a distinct capability)
+- **Layer:** Use when files share concerns across architectural boundaries (types, handlers, middleware, each operates on the same domain)
+- **When in doubt:** Prefer domain, it maps closer to how humans think about modules
 
 **Rules that still apply:**
 - **Depth:** New subdirs count toward the 6-level budget
@@ -894,9 +894,9 @@ src/
 
 **Scope:** Applies to project source code. Convention/reference docs (like this file) use table-of-contents navigation instead.
 
-### Directory Index Files (`context.md`)
+### Directory Index Files
 
-Add a `context.md` to any folder where filenames alone don't convey the full picture — typically 5+ files forming a non-obvious module grouping.
+Add a `context.md` to any folder where filenames alone don't convey the full picture, typically 5+ files forming a non-obvious module grouping.
 
 **When to create:**
 - Folder has multiple files whose purpose isn't evident from names alone
@@ -911,14 +911,14 @@ Add a `context.md` to any folder where filenames alone don't convey the full pic
 ```markdown
 # Context
 
-- `filename.ext` — One-line present-tense purpose
-- `other-file.ext` — One-line present-tense purpose
+- `filename.ext`, One-line present-tense purpose
+- `other-file.ext`, One-line present-tense purpose
 ```
 
 **Single source of truth:**
 - **Derive from file headers:** Each entry must match the file's header `Purpose:` line verbatim (or near-verbatim if truncated for length)
 - The file header is the authoritative source; `context.md` is a derived surface
-- This enables automated drift detection — updating a header without updating `context.md` triggers the hook
+- This enables automated drift detection, updating a header without updating `context.md` triggers the hook
 
 **Files in context.md require headers:**
 - Any file listed in `context.md` **must** have a file header with a `Purpose:` line
@@ -927,9 +927,9 @@ Add a `context.md` to any folder where filenames alone don't convey the full pic
 
 **Rules:**
 - One line per file, present-tense verb phrase (from header `Purpose:`)
-- Directories are excluded — they own their own `context.md`
+- Directories are excluded, they own their own `context.md`
 - Always tracked in git; never gitignored
-- **Must be updated atomically with file additions, removals, and renames** — same commit, no exceptions
+- **Must be updated atomically with file additions, removals, and renames**, same commit, no exceptions
 - Treat an outdated `context.md` as broken as a missing import
 
 **Drift detection:**
@@ -1377,8 +1377,7 @@ git rebase -i HEAD~3
 - No priority markers
   - Bad: "TODO (HIGH PRIORITY): Fix bug"
   - Good: "Fix: API returns 500 on empty payload"
-- Verified claims only
-  - If unsure, say "may" or "typically" rather than stating as fact
+- **Informed over assumed:** State only what has been verified. If unverified, qualify explicitly ("untested", "theoretical", "may"). Avoid filling gaps with plausible-sounding mechanisms; a gap is better than a wrong explanation. Trivial claims exempt.
 
 **Code blocks when used:**
 ````markdown
@@ -1413,6 +1412,49 @@ configuration/
 ```
 
 **Lazy principle:** Tree exploration > README maintenance. Newcomers learn by examining structure.
+
+### Collapsible Docs
+
+When documentation sections are numerous or long, use HTML5 `<details>/<summary>` for collapsibility:
+
+```markdown
+<details>
+<summary>Section Title</summary>
+
+Content here, use bullets, code blocks, etc.
+
+</details>
+```
+
+- All sections collapsed by default (`<details>` without `open`)
+- Open only high-priority sections (e.g. installation): `<details open>`
+- Prefer bullet lists over tables within collapsed sections
+- Collapsing reduces scroll fatigue while keeping all info accessible
+
+### Sentence-Level Readability
+
+**Rule:** One topic per line in markdown documentation. Split dense paragraphs at idea boundaries.
+
+```markdown
+# Bad: three topics crammed into one sentence
+The script builds Nix derivations, harvests ChromeOS drivers from the recovery image, and assembles a partitioned disk image at work/shimboot.img.
+
+# Good: one idea per line
+The script builds Nix derivations and harvests ChromeOS drivers from the recovery image.
+
+Assembles a partitioned disk image at `work/shimboot.img`.
+```
+
+**When to split:**
+- Each sentence introduces a distinct concept or step
+- Conjunctive chains (and, then, also) signal separate ideas
+- Explanations of *why* belong on their own line
+- Parenthetical asides should become their own sentence or paragraph
+
+**Why:**
+- Scanning is faster than reading, one idea per line lets readers skip irrelevant topics without parsing compound sentences
+- Diffs are cleaner, changing one idea changes one line, not a shared sentence
+- Reduces cognitive load, no parsing of comma-separated topic shifts
 
 ## 13. Validation
 
@@ -1798,13 +1840,140 @@ const reverseString = (str) => {
 - **No emoticons** unless explicitly requested
   - Bad: `# 🚀 Deploy script`
   - Good: `# Deploy script`
+- **Prefer Unicode symbols over emojis** when icons are needed: use text-category symbols (✓, ✗, →, ⚠) not emoji-category pictograms (✅, ❌, 🚀). Unicode symbols render consistently across terminals and fonts.
 - **Abbreviate common terms** (unless stated otherwise):
   - configuration → config (context-dependent)
   - repository → repo
   - temporary → temp
   - initialize → init
 - **Professional tone:** Technical, direct, unambiguous
+- **No em dashes:** Use commas or split into separate sentences. Em dashes obscure sentence boundaries and complicate diffing.
+  - Bad: `The shim is unverified, it can be replaced.`
+  - Good: `The shim is unverified. It can be replaced.`
 - **Avoid redundancy:** Each word should add value
+- **Anti-slop writing rules:** The patterns below mark machine-generated prose. Avoid them in all developer writing: comments, commit messages, docs, code review, and architecture decisions.
+
+**Banned intensifiers** (replace with the number or fact they stand in for):
+  - extremely, dramatically, exceptionally, significantly, incredibly, remarkably, truly, absolutely, literally, very, quite, rather
+
+**Banned filler phrases:**
+  - "In today's world", "It's important to note", "When it comes to", "At the end of the day", "It goes without saying", "Look no further", "Let's dive in", "Here's the thing", "But here's the kicker", "This is where X comes in", "Our team of experts"
+
+**Banned AI verbs** (use plain equivalents):
+  - delve → explore, leverage → use, utilize → use, facilitate → help/enable, foster → encourage, bolster → strengthen, underscore → highlight, unveil → reveal, streamline → simplify, endeavour → try, ascertain → find out, elucidate → explain
+
+**Banned AI transitions** (use plain connectors):
+  - Furthermore, Moreover, Notwithstanding, That being said, In essence, At its core, To put it simply, It is worth noting that
+
+**Banned academic tells:**
+  - "shed light on", "pave the way for", "a myriad of", "a plethora of", paramount, in light of → because of, prior to → before, subsequent to → after, in terms of → about/for
+
+**No weasel words:** "may potentially", "helps ensure", "can potentially". Either the thing happens or it does not. Commit or cut.
+
+**No parentheticals in headings:** Trust the reader. Do not add parenthetical clarifications, scopes, or asides inside headings. If the heading cannot carry the point, restructure.
+  - Bad: `## Build system (NixOS / Home Manager)`
+  - Good: `## Build system`
+
+**No dramatic or narrative headings:** Headings describe what the section contains, not what it means. Use concrete, technical descriptions, not thriller chapter titles. No parenthetical asides in headings, if the heading cannot carry the point, restructure.
+  - Bad: "The Hidden Cost of Convenience"
+  - Good: "Subscription cost accumulation over time"
+
+**Heading anti-patterns to cut:**
+
+| Pattern | Bad | Good |
+|---|---|---|
+| "The [Concept] Trap" | "The Initialization Trap" | "Import vs. initialize: DDF metadata destruction risk" |
+| "The [Adjective] [Noun]" drama | "The Hidden Danger" | "Firmware corruption after sudden power loss" |
+| "[Noun]: The [Adjective] [Noun]" | "Encryption: The Hidden Trap" | "Hardware AES-256 encryption on WD Passport bridge boards" |
+| "Why [Action] [Dramatic Verb] [Object]" | "Why Rebuilding Destroys Everything" | "How forced rebuilds overwrite parity on degraded arrays" |
+| "The [Noun] You [Emotion Verb]" | "The Risk You Overlook" | "Unmonitored SMART threshold warnings" |
+| Vague analytical | "Broader Implications" | "Impact on third-party repair parts availability" |
+
+**No unsourced statistics:** Every number must be real and attributable. If the source cannot be stated, cut the number. A fabricated figure is worse than no figure.
+
+**No hollow statements:** Every claim must end with a concrete, verifiable detail. If a sentence asserts importance without a specific fact, a date, a dollar amount, a part number, or a named source, delete it.
+
+**No synthetic enthusiasm:** Do not add exclamation marks or cheerleading. State the facts. The evidence carries the weight.
+
+**No performative urgency:** "Act now" needs a concrete consequence (a real deadline, a real penalty) in the same sentence, or it gets cut.
+
+**Never start a sentence with "Whether you're":** This three-example pattern ("Whether you're a developer, a designer, or a manager...") is a high-confidence AI tell. Rewrite.
+
+**No fabricated facts:** Never invent case studies, scenarios, historical dates, milestones, or attributed quotes. Do not claim a person, organization, or company said something without a real, verifiable source. If a fact cannot be supported, delete it.
+
+**No research-process narration:** Report the facts you can support and silently omit what you cannot. Do not narrate what you searched for and failed to find ("could not be located", "was not found"). Do not attach an "as of [date]" qualifier to your own inability to find something. If a fact cannot be supported, delete it. Do not tell the reader you looked.
+
+**Quote sources accurately:** When attributing text in quotation marks, match the source exactly. Do not correct grammar, swap pronouns, or clean up wording. Mark alterations with square brackets. Paraphrase without quotation marks if the wording is awkward.
+  - Short quotes (≤ ~15 words): keep run-in inside the sentence, introduced with a brief attribution clause.
+  - Long quotes (> ~15 words): set off as an indented block, introduced by a one-sentence attribution clause, so the source's voice is visually distinct.
+
+**No repeated talking points:** Say it once. Duplicates are padding.
+
+**Vary structure:** Three consecutive sections or paragraphs with identical layout is a pattern. Break it. Vary paragraph length, sentence rhythm, and how each section opens.
+
+**Reference without narrating the reference:** Do not write "as discussed above" or "as we will see." Make the connection and move on.
+
+**Hedging threshold:** Epistemic modals ("may", "might", "could", "potentially") and cognitive hedges ("it seems", "arguably", "likely") should not blanket declarative sections. In established-fact contexts (background, history, timeline), more than three hedges per paragraph or eight per 1,000 words signals AI-generated slop. Hedge only for genuinely pending or disputed claims.
+
+**No scare quotes on normal words:** Use quotation marks only for actual quotations from a named source.
+
+**Banned adjectives** (overused by models; use plain equivalents):
+  - robust → strong, reliable, thorough
+  - comprehensive → complete, thorough, full, detailed
+  - pivotal → key, critical, central, important
+  - crucial / vital → important, key, essential, critical
+  - transformative → significant, important, major
+  - cutting-edge / groundbreaking / innovative → new, advanced, recent, modern, original, creative
+  - seamless → smooth, easy, effortless
+  - intricate → complex, detailed, complicated
+  - nuanced → subtle, complex, detailed
+  - multifaceted → complex, varied, diverse
+  - holistic → complete, whole, comprehensive
+
+**Banned metaphorical nouns** (literal uses are fine; flag metaphorical):
+  - tapestry ("a tapestry of regulations") → literal only (actual woven fabric)
+  - symphony ("a symphony of features") → literal only (actual musical composition)
+  - beacon ("a beacon of hope") → literal only (actual light or signal device)
+  - realm ("in the realm of cybersecurity") → literal only (actual kingdom or territory)
+  - testament ("a testament to innovation") → literal only (actual legal document)
+
+**Inflated symbolism phrases** (high-frequency AI tells):
+  - "provide a valuable insight"
+  - "left an indelible mark"
+  - "play a significant role in shaping"
+  - "an unwavering commitment"
+  - "open a new avenue"
+  - "a stark reminder"
+  - "gain a comprehensive understanding"
+  - "serves as a testament"
+  - "watershed moment"
+  - "deeply rooted"
+
+**Hallucinated markup artifacts:** AI tools sometimes emit citation placeholders from training data. These strings in generated text mean zero editing occurred. Zero tolerance:
+  - `oaicite`, `contentReference`, `grok_card`, `attributableIndex`, `turn0search0`
+
+**Structural variance rules** (machine text is uniform; human text varies):
+- **Sentence length uniformity:** If a 500-word block contains no sentences under 8 words or over 30 words, it lacks human burstiness. Target one sentence under 10 words and one over 20 per 3-paragraph block.
+- **Paragraph length uniformity:** If all paragraphs in a section are within 15% of each other in word count, vary them intentionally.
+- **Opening-word repetition:** Three or more consecutive paragraphs starting with the same word or phrase is a mechanical pattern. Vary openers.
+- **Transition density:** If more than 30% of paragraphs begin with a transition word or adverbial clause, the text is structurally artificial.
+- **Contrasting parallelism:** More than two instances of "It's not X. It's Y." or "It’s not about X, it’s about Y." in a 500-word block is an AI tell.
+
+**Root-cause differentiation:** When you contrast two things, name the concrete difference that separates them. Do not assert that one is exempt, newer, better, or unaffected without stating what specifically makes it so (the part, the version, the date, the mechanism, or the supply-chain change). If you do not have that detail, do not imply the difference exists.
+
+**Self-check before returning prose:** Run this pass on generated docs, comments, and commit messages before committing.
+  1. Search for em dashes and remove.
+  2. Scan for banned verbs (delve, leverage, utilize, foster, bolster, underscore, unveil, streamline) and replace.
+  3. Scan for banned adjectives and intensifiers (robust, comprehensive, pivotal, seamless, significantly, extremely, truly) and cut or replace.
+  4. Scan for banned transitions and openers (Furthermore, Moreover, That being said, In today's world, It's worth noting that).
+  5. Check every number: is it real and attributable? If not, cut it.
+  6. Check every sentence ends on a concrete detail, not an assertion of importance.
+  7. Check headings: does each name the content rather than tease it?
+  8. Check for repeated points and repeated section shapes.
+  9. Check for fabricated attributions or unsourced quotes.
+  10. Count hedging markers per paragraph. More than three is a red flag.
+  11. Ensure varied sentence lengths: in any 3-paragraph block, at least one sentence under 10 words and one over 20.
+  12. Read it aloud. If a phrase would sound unnatural to a colleague, rewrite it.
 
 ## 17. Example Patterns
 
@@ -1834,7 +2003,7 @@ See [DEV-EXAMPLES.md](./DEV-EXAMPLES.md) for concrete reference examples from re
 
 ### Systemd
 
-- Not every host runs systemd — could be non-systemd Linux, BSD, macOS, WSL, etc.
+- Not every host runs systemd; could be non-systemd Linux, BSD, macOS, WSL, etc.
 - Do not assume `systemctl` exists; if the command fails or doesn't exist, skip it
 - Do not wrap systemd-dependent commands in error traps that abort the whole one-shot
 - Prefer checking availability first: `command -v systemctl &>/dev/null && systemctl ...`
@@ -1842,7 +2011,7 @@ See [DEV-EXAMPLES.md](./DEV-EXAMPLES.md) for concrete reference examples from re
 
 ### Search tools
 
-- **Prefer ripgrep (`rg`)** when available — faster, respects `.gitignore` automatically
+- **Prefer ripgrep (`rg`)** when available; faster, respects `.gitignore` automatically
 - **Fallback:** `grep -r` with shell globs, `awk`, `sed`, or any available tools as appropriate
 - Do not assume `rg` exists; check with `command -v rg &>/dev/null` or just use `grep -r` if uncertain
 
@@ -1972,7 +2141,7 @@ done
 
 # Generate changelog
 cat > "$CHANGELOG" <<EOF
-# Changelog — ${CURRENT_BRANCH} → ${TARGET_BRANCH}
+# Changelog, ${CURRENT_BRANCH} → ${TARGET_BRANCH}
 
 **Date:** $(date -u +"%Y-%m-%d")
 **Branch:** ${CURRENT_BRANCH}
@@ -2012,7 +2181,7 @@ git commit --amend --no-edit
 ### Changelog Format
 
 ```markdown
-# Changelog — feature-branch → main
+# Changelog, feature-branch → main
 
 **Date:** 2026-02-13
 **Branch:** dev
@@ -2088,20 +2257,20 @@ terms to your repo's actual structure in your root `context.md` under a
 |------|------------|
 | **Domain** | Bounded area of concern |
 | **Subdomain** | Narrower concern within a domain |
-| **Bounded Context** | Everything scoped to one deployable unit — its own rules and overrides |
+| **Bounded Context** | Everything scoped to one deployable unit, its own rules and overrides |
 | **Context Boundary** | The seam where unit-specific config meets shared config |
 | **Shared Kernel** | Code multiple domains depend on without any single domain owning |
 | **Anti-Corruption Layer** | Translates raw inputs into a normalized shape before the rest of the system sees them |
 | **Infrastructure** | Plumbing that supports domains without belonging to any |
 | **Supporting Domain** | Exists to serve the core domain, not be it |
-| **Generic Subdomain** | Solved problem, not unique to this domain — patch upstream, move on |
+| **Generic Subdomain** | Solved problem, not unique to this domain, patch upstream, move on |
 
 ### Building block terms
 
 | Term | Definition |
 |------|------------|
 | **Entity** | A thing with identity, distinguished from others of its kind |
-| **Value Object** | No identity of its own — a pure value, swappable and reusable |
+| **Value Object** | No identity of its own, a pure value, swappable and reusable |
 | **Aggregate** | The root that pulls all parts of one entity into a coherent whole |
 | **Aggregate Root** | The single entry point everything resolves through |
 | **Repository** | Knows how to find and assemble all entities of a type |
@@ -2113,8 +2282,8 @@ terms to your repo's actual structure in your root `context.md` under a
 | Term | Definition |
 |------|------------|
 | **Policy** | A named rule set applied to entities |
-| **Specification** | Defines what it means to satisfy a named policy — inclusion criteria |
-| **Strategy** | Per-entity behavioral override — same interface, different implementation |
+| **Specification** | Defines what it means to satisfy a named policy, inclusion criteria |
+| **Strategy** | Per-entity behavioral override, same interface, different implementation |
 | **Base Domain** | Core shared reality every entity inherits |
 | **Detached Instance** | An entity that opted out of shared behavior and owns its own implementation |
 | **Ubiquitous Language** | The shared vocabulary all contributors and agents use to describe a repo |
@@ -2141,7 +2310,7 @@ For contributors coming from a design background:
 When a unit-level override exists for a concern, that unit has **detached
 from the shared model** for that concern. In Figma terms: detached
 instance. In DDD terms: bounded context with a broken conformist
-relationship. Both mean the same thing — it opted out, it owns the copy,
+relationship. Both mean the same thing; it opted out, it owns the copy,
 changes to base will not propagate to it automatically.
 
 ---
